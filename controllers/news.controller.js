@@ -4,7 +4,7 @@ exports.getAllNews = (req, res) => {
     if (!req.query.page) {
         req.query.page = 1;
     }
-    news.find({}).then(result => {
+    news.find({}).sort({ updatedAt: -1 }).then(result => {
         const perPage = 9;
         const pages = Math.ceil(result.length / perPage);
         const from = (req.query.page - 1) * perPage;

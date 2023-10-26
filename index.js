@@ -9,6 +9,7 @@ require('dotenv').config();
 app.use("/news", require('./routes/news.route'));
 app.use("/articles", require('./routes/articles.route'));
 app.use("/admin", require('./routes/admin.route'));
+app.use("/social", require('./routes/social.route'));
 
 connect().then(() => {
     app.listen(8000, () => {

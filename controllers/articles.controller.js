@@ -35,6 +35,12 @@ exports.getAllArticles = (req, res) => {
     })
 }
 
+exports.getLastThree = (req, res) => {
+    articles.find({}).sort({ updatedAt: -1 }).then(result => {
+        res.send(result.slice(0, 3))
+    })
+}
+
 exports.getArticle = (req, res) => {
     const { id } = req.params;
     articles.findById(id).then(result => {

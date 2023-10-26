@@ -35,6 +35,12 @@ exports.getAllNews = (req, res) => {
     })
 }
 
+exports.getLastThree = (req, res) => {
+    news.find({}).sort({ updatedAt: -1 }).then(result => {
+        res.send(result.slice(0, 3))
+    })
+}
+
 exports.getNews = (req, res) => {
     const { id } = req.params;
     news.findById(id).then(result => {
@@ -43,8 +49,8 @@ exports.getNews = (req, res) => {
 }
 
 exports.createNews = (req, res) => {
-    const { title, hero, description } = req.body;
-    if (!title || !hero || !description) {
+    const { title, subTitle, hero, description } = req.body;
+    if (!title || !subTitle || !hero || !description) {
         res.sendStatus(400);
     } else {
         news.create(req.body).then(result => {

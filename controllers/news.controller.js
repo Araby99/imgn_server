@@ -4,7 +4,21 @@ exports.getAllNews = (req, res) => {
     if (!req.query.page) {
         req.query.page = 1;
     }
-    news.find({}).sort({ updatedAt: -1 }).then(result => {
+    const { name, _id, createdAt } = req.body;
+    let filters = {};
+    if (name) filters.name = name;
+    if (_id) filters._id = _id;
+    if (createdAt) {
+        const start = new Date(createdAt);
+        let end = new Date();
+        end = new Date(end.setDate(start.getDate() + 1));
+        end.setUTCHours(0)
+        end.setUTCMinutes(0)
+        end.setUTCMilliseconds(0)
+        filters.createdAt = { $gte: start, $lt: end }
+        console.log(start, end);
+    }
+    news.find(filters).sort({ updatedAt: -1 }).then(result => {
         const perPage = 9;
         const pages = Math.ceil(result.length / perPage);
         const from = (req.query.page - 1) * perPage;
@@ -32,12 +46,12 @@ exports.getAllNews = (req, res) => {
         }
         response.links = links;
         res.send(response)
-    })
+    }).catch(err => console.log(err))
 }
 
 exports.getLastThree = (req, res) => {
-    news.find({}).sort({ updatedAt: -1 }).then(result => {
-        res.send(result.slice(0, 3))
+    news.find({}).sort({ updatedAt: -1 }).limit(3).then(result => {
+        res.send(result)
     })
 }
 
@@ -57,4 +71,16 @@ exports.createNews = (req, res) => {
             res.send(result);
         })
     }
+}
+
+exports.updateNews = (req, res) => {
+    const { _id } = req.params;
+    news.findOneAndUpdate({ _id }, req.body, { new: true }).then(result => {
+        res.send(result)
+    })
+}
+
+exports.deleteNews = (req, res) => {
+    const { _id } = req.params;
+    news.findByIdAndDelete(_id).then(result => res.sendStatus(200))
 }

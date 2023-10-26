@@ -1,11 +1,13 @@
 const { Router } = require("express");
-const { getAllNews, createNews, getNews, getLastThree } = require("../controllers/news.controller");
+const { getAllNews, createNews, getNews, getLastThree, updateNews, deleteNews } = require("../controllers/news.controller");
 const { admin } = require("../middlewars/admin.middleware");
 const router = Router();
 
-router.get("/", getAllNews)
+router.post("/", getAllNews)
 router.get("/getLastThree", getLastThree)
 router.get("/:id", getNews)
-router.post("/", admin, createNews)
+router.post("/create", admin, createNews)
+router.put("/:_id", admin, updateNews)
+router.delete("/:_id", deleteNews)
 
 module.exports = router;

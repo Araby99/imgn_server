@@ -4,7 +4,17 @@ exports.getAllArticles = (req, res) => {
     if (!req.query.page) {
         req.query.page = 1;
     }
-    articles.find({}).sort({ updatedAt: -1 }).then(result => {
+    const { name, _id, createdAt } = req.body;
+    let filters = {};
+    if (name) filters.name = name;
+    if (_id) filters._id = _id;
+    if (createdAt) {
+        const start = new Date(createdAt);
+        let end = new Date();
+        end = new Date(end.setDate(start.getDate() + 1));
+        filters.createdAt = { $gte: start, $lt: end }
+    }
+    articles.find(filters).sort({ updatedAt: -1 }).then(result => {
         const perPage = 9;
         const pages = Math.ceil(result.length / perPage);
         const from = (req.query.page - 1) * perPage;
@@ -32,29 +42,45 @@ exports.getAllArticles = (req, res) => {
         }
         response.links = links;
         res.send(response)
-    })
+    }).catch(err => console.log(err))
 }
 
 exports.getLastThree = (req, res) => {
-    articles.find({}).sort({ updatedAt: -1 }).then(result => {
-        res.send(result.slice(0, 3))
+    articles.find({}).sort({ updatedAt: -1 }).limit(3).then(result => {
+        res.send(result)
     })
 }
 
 exports.getArticle = (req, res) => {
     const { id } = req.params;
     articles.findById(id).then(result => {
-        res.send(result)
+        if (result) {
+            res.send(result)
+        } else {
+            res.sendStatus(404)
+        }
     })
 }
 
 exports.createArticles = (req, res) => {
-    const { title, hero, description } = req.body;
-    if (!title || !hero || !description) {
+    const { title, subTitle, hero, description } = req.body;
+    if (!title || !subTitle || !hero || !description) {
         res.sendStatus(400);
     } else {
         articles.create(req.body).then(result => {
             res.send(result);
         })
     }
+}
+
+exports.updateArticle = (req, res) => {
+    const { _id } = req.params;
+    articles.findOneAndUpdate({ _id }, req.body, { new: true }).then(result => {
+        res.send(result)
+    })
+}
+
+exports.deleteArticle = (req, res) => {
+    const { _id } = req.params;
+    articles.findByIdAndDelete(_id).then(result => res.sendStatus(200))
 }

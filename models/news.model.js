@@ -7,4 +7,4 @@ const newsSchema = new Schema({
     description: String
 }, { timestamps: true });
 
-exports.news = model("news", newsSchema);
+exports.news = model("news", newsSchema.index({ '$**': 'text' }));

@@ -84,3 +84,8 @@ exports.deleteNews = (req, res) => {
     const { _id } = req.params;
     news.findByIdAndDelete(_id).then(result => res.sendStatus(200))
 }
+
+exports.getRelated = async (req, res) => {
+    const { tag } = req.params;
+    news.find({ $text: { $search: tag } }).then(result => res.send(result))
+}

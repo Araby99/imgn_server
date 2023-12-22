@@ -4,7 +4,9 @@ const newsSchema = new Schema({
     title: String,
     subTitle: String,
     hero: String,
-    description: String
-}, { timestamps: true });
+    description: String,
+    tags: Array,
+    related: Array
+}, { timestamps: true }).index({ '$**': 'text' });
 
-exports.news = model("news", newsSchema.index({ '$**': 'text' }));
+exports.news = model("news", newsSchema);

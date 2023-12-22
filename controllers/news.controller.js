@@ -59,7 +59,7 @@ exports.getNews = (req, res) => {
     const { id } = req.params;
     news.findById(id).then(result => {
         res.send(result)
-    })
+    }).catch(err => res.sendStatus(404))
 }
 
 exports.createNews = (req, res) => {
@@ -87,5 +87,10 @@ exports.deleteNews = (req, res) => {
 
 exports.getRelated = async (req, res) => {
     const { tag } = req.params;
-    news.find({ $text: { $search: tag } }).then(result => res.send(result))
+    news.find({ $text: { $search: tag.split(",").join(" ") } }).then(result => res.send(result))
+}
+
+exports.search = async (req, res) => {
+    const { tag } = req.params;
+    news.find({ $text: { $search: `\"${tag.split(",").join(" ")}\"` } }).then(result => res.send(result))
 }

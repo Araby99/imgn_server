@@ -4,7 +4,8 @@ const articlesSchema = new Schema({
     title: String,
     subTitle: String,
     hero: String,
-    description: String
-}, { timestamps: true });
+    description: String,
+    tags: Array,
+}, { timestamps: true }).index({ '$**': 'text' });
 
 exports.articles = model("articles", articlesSchema);

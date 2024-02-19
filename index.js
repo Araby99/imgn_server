@@ -1,5 +1,8 @@
 const express = require("express");
 const { connect } = require("./db/connect");
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
@@ -15,7 +18,11 @@ app.use("/BOD", require('./routes/BOD.route'));
 app.use("/about", require('./routes/about.route'));
 
 connect().then(() => {
-    app.listen(8000, () => {
-        console.log("Server Done!");
+    const sslServer = https.createServer({
+        key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+        cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem')),
+    }, app)
+    sslServer.listen(8000, () => {
+        console.log("Server Done On Port 8000!");
     })
 })
